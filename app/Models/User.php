@@ -42,4 +42,15 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function getRoleLabelAttribute(): string
+    {
+        return match ($this->role) {
+            'admin'   => 'Administrator',
+            'ttb'     => 'Officer TTB/SJ',
+            'loading' => 'Bongkar/Muat',
+            'security'=> 'Petugas Keamanan',
+            default   => ucfirst((string) $this->role),
+        };
+    }
 }

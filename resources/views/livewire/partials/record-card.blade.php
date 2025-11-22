@@ -46,7 +46,7 @@
             
             <div class="flex justify-between items-start -mt-1">
                 <div>
-                    <h4 class="text-sm font-bold {{ $hasSecurityIn ? 'text-gray-800' : 'text-gray-400' }}">Security Masuk</h4>
+                    <h4 class="text-sm font-bold {{ $hasSecurityIn ? 'text-gray-800' : 'text-gray-400' }}">Mobil Masuk</h4>
                     <p class="text-xs text-gray-500 mt-0.5">
                         @if($record->security_in_officer) 👮 {{ $record->security_in_officer }} @else - @endif
                     </p>
@@ -102,7 +102,7 @@
             
             <div class="flex justify-between items-start -mt-1">
                 <div>
-                    <h4 class="text-sm font-bold {{ $hasTtbStart ? 'text-gray-800' : 'text-gray-400' }}">Officer TTB & Distribusi</h4>
+                    <h4 class="text-sm font-bold {{ $hasTtbStart ? 'text-gray-800' : 'text-gray-400' }}">Officer TTB/SJ & Distribusi</h4>
                     <div class="text-xs text-gray-500 mt-1 space-y-1">
                         <div>Mulai: @if($record->ttb_start_officer) 🧾 {{ $record->ttb_start_officer }} @else - @endif</div>
                         <div>Selesai: @if($record->ttb_end_officer) 🏁 {{ $record->ttb_end_officer }} @else - @endif</div>
@@ -136,7 +136,7 @@
             
             <div class="flex justify-between items-start -mt-1">
                 <div>
-                    <h4 class="text-sm font-bold {{ $hasSecurityOut ? 'text-gray-800' : 'text-gray-400' }}">Security Keluar</h4>
+                    <h4 class="text-sm font-bold {{ $hasSecurityOut ? 'text-gray-800' : 'text-gray-400' }}">Mobil Keluar</h4>
                     <p class="text-xs text-gray-500 mt-0.5">
                         @if($record->security_out_officer) 👮 {{ $record->security_out_officer }} @else - @endif
                     </p>
@@ -204,19 +204,19 @@
                 // 1) Mulai TTB
                 if ($record->current_stage == 'loading_ended') {
                     $showButton = true;
-                    $btnText    = 'Mulai TTB';
+                    $btnText    = 'Mulai TTB/SJ';
                     $btnColor   = 'bg-blue-600 hover:bg-blue-700';
                 }
                 // 2) Selesai TTB
                 elseif ($record->current_stage == 'ttb_started') {
                     $showButton = true;
-                    $btnText    = 'Selesai TTB';
+                    $btnText    = 'Selesai TTB/SJ';
                     $btnColor   = 'bg-orange-600 hover:bg-orange-700';
                 }
                 // 3) Distribusi ke Supir
                 elseif ($record->current_stage == 'ttb_ended') {
                     $showButton = true;
-                    $btnText    = 'Distribusi ke Supir';
+                    $btnText    = 'Distribusi ke Supir TTB/SJ';
                     $btnColor   = 'bg-emerald-600 hover:bg-emerald-700';
                 }
             }

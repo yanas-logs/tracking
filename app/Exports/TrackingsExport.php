@@ -1,5 +1,4 @@
 <?php
-// app/Exports/TrackingsExport.php
 
 namespace App\Exports;
 
@@ -12,168 +11,132 @@ class TrackingsExport implements FromCollection, WithHeadings
 {
     use Exportable;
 
-    // untuk filter search dari Livewire
     protected $search;
+    public $start_date;
+    public $end_date;
 
     public function __construct(string $search = null)
     {
         $this->search = $search;
     }
 
-    /**
-     * Data yang diexport
-     */
-
-    public $start_date, $end_date;
-
     public function collection()
     {
         $query = Tracking::query();
 
+        // filter tanggal
         if ($this->start_date) {
-                    $query->whereDate('security_start', '>=', $this->start_date);
-                }
+            $query->whereDate('security_start', '>=', $this->start_date);
+        }
+        if ($this->end_date) {
+            $query->whereDate('security_start', '<=', $this->end_date);
+        }
 
-                if ($this->end_date) {
-                    $query->whereDate('security_start', '<=', $this->end_date);
-                }
-
-        // filter search (kalau ada)
+        // filter pencarian
         if (!empty($this->search)) {
             $query->where(function ($q) {
-                $q->where('vehicle_name', 'like', '%' . $this->search . '%')
-                  ->orWhere('plate_number', 'like', '%' . $this->search . '%')
-                  ->orWhere('driver_name', 'like', '%' . $this->search . '%')
-                  ->orWhere('type', 'like', '%' . $this->search . '%');
+                $q->where('vehicle_name', 'like', "%{$this->search}%")
+                  ->orWhere('company_name', 'like', "%{$this->search}%")
+                  ->orWhere('plate_number', 'like', "%{$this->search}%")
+                  ->orWhere('driver_name', 'like', "%{$this->search}%")
+                  ->orWhere('type', 'like', "%{$this->search}%");
             });
         }
 
-        $data = $query->latest()->get();
+        $rows = $query->latest()->get();
 
-        return $data->map(function ($record) {
+        // helper tanggal & jam terpisah
+        $split = fn($v) => [
+            'date' => $v ? $v->format('Y-m-d') : '',
+            'time' => $v ? $v->format('H:i') : ''
+        ];
+
+        return $rows->map(function ($r) use ($split) {
+            $secIn  = $split($r->security_start);
+            $secOut = $split($r->security_end);
+            $loadS  = $split($r->loading_start);
+            $loadE  = $split($r->loading_end);
+            $ttbS   = $split($r->ttb_start);
+            $ttbE   = $split($r->ttb_end);
+            $dist   = $split($r->distribution_at);
+
             return [
-                // IDENTITAS KENDARAAN & SUPIR
-                'vehicle_name'        => $record->vehicle_name,
-                'company_name'        => $record->company_name,
-                'plate_number'        => $record->plate_number,
-                'vehicle_kind'        => $record->vehicle_kind,
-                'destination'         => $record->destination,
-                'type'                => $record->type ? strtoupper($record->type) : null, // BONGKAR / MUAT
+                // Identitas
+                $r->vehicle_name,
+                $r->company_name,
+                $r->plate_number,
+                $r->vehicle_kind,
+                $r->destination,
+                strtoupper($r->type ?? ''),
+                $r->driver_name,
+                $r->driver_phone,
+                $r->driver_identity,
+                $r->description,
 
-                'driver_name'         => $record->driver_name,
-                'driver_phone'        => $record->driver_phone,
-                'driver_identity'     => $record->driver_identity,
+                // Mobil Masuk (Security)
+                $secIn['date'], $secIn['time'], $r->security_in_officer,
 
-                // SECURITY MASUK / KELUAR
-                'security_start'      => $this->formatDateTime($record->security_start),
-                'security_in_officer' => $record->security_in_officer,
-                'security_end'        => $this->formatDateTime($record->security_end),
-                'security_out_officer'=> $record->security_out_officer,
+                // Bongkar / Muat
+                $loadS['date'], $loadS['time'], $r->loading_start_officer,
+                $loadE['date'], $loadE['time'], $r->loading_end_officer,
 
-                // BONGKAR / MUAT
-                'loading_start'       => $this->formatDateTime($record->loading_start),
-                'loading_start_officer'=> $record->loading_start_officer,
-                'loading_end'         => $this->formatDateTime($record->loading_end),
-                'loading_end_officer' => $record->loading_end_officer,
+                // TTB / SJ
+                $ttbS['date'], $ttbS['time'], $r->ttb_start_officer,
+                $ttbE['date'], $ttbE['time'], $r->ttb_end_officer,
 
-                // OFFICER TTB
-                'ttb_start'           => $this->formatDateTime($record->ttb_start),
-                'ttb_start_officer'   => $record->ttb_start_officer,
-                'ttb_end'             => $this->formatDateTime($record->ttb_end),
-                'ttb_end_officer'     => $record->ttb_end_officer,
+                // Distribusi
+                $dist['date'], $dist['time'], $r->distribution_officer,
 
-                // DISTRIBUSI KE SUPIR
-                'distribution_at'     => $this->formatDateTime($record->distribution_at),
-                'distribution_officer'=> $record->distribution_officer,
+                // Mobil Keluar (Security)
+                $secOut['date'], $secOut['time'], $r->security_out_officer,
 
-                // KHUSUS PROSES BONGKAR
-                'sj_number'           => $record->sj_number,
-                'item_name'           => $record->item_name,
-                'item_quantity'       => $record->item_quantity,
-
-                // LAIN2
-                'description'         => $record->description,
-                'status'              => $this->statusLabel($record->current_stage),
-                'created_at'          => $this->formatDateTime($record->created_at),
+                // Ringkasan
+                $this->statusLabel($r->current_stage),
+                $r->created_at?->format('Y-m-d H:i'),
             ];
         });
     }
 
-    /**
-     * Judul kolom di Excel
-     */
     public function headings(): array
     {
         return [
-            // IDENTITAS KENDARAAN & SUPIR
-            'Nama Kendaraan / Vendor',
-            'Nama Instansi / Perusahaan',
-            'Plat Nomor',
-            'Jenis Kendaraan',
-            'Tujuan',
-            'Jenis Kegiatan (B/M)',
+            // Identitas
+            'Nama Kendaraan', 'Nama Instansi', 'Plat Nomor', 'Jenis Kendaraan', 'Tujuan',
+            'Jenis (B/M)', 'Nama Supir', 'No HP Supir', 'Identitas Supir', 'Keterangan',
 
-            'Nama Supir',
-            'Nomor HP Supir',
-            'Identitas Supir (KTP/SIM)',
+            // Mobil Masuk (Security)
+            'Mobil Masuk - Tanggal', 'Mobil Masuk - Waktu', 'Mobil Masuk - Nama Petugas',
 
-            // SECURITY
-            'Security Masuk - Waktu',
-            'Security Masuk - Nama Petugas',
-            'Security Keluar - Waktu',
-            'Security Keluar - Nama Petugas',
+            // Bongkar / Muat
+            'Bongkar/Muat Mulai - Tanggal', 'Bongkar/Muat Mulai - Waktu', 'Bongkar/Muat Mulai - Nama Petugas',
+            'Bongkar/Muat Selesai - Tanggal', 'Bongkar/Muat Selesai - Waktu', 'Bongkar/Muat Selesai - Nama Petugas',
 
-            // BONGKAR / MUAT
-            'Bongkar/Muat Mulai - Waktu',
-            'Bongkar/Muat Mulai - Nama Petugas',
-            'Bongkar/Muat Selesai - Waktu',
-            'Bongkar/Muat Selesai - Nama Petugas',
+            // TTB/SJ
+            'TTB/SJ Mulai - Tanggal', 'TTB/SJ Mulai - Waktu', 'TTB/SJ Mulai - Nama Officer',
+            'TTB/SJ - Tanggal', 'TTB/SJ - Waktu', 'TTB/SJ - Nama Officer',
 
-            // OFFICER TTB
-            'TTB Mulai - Waktu',
-            'TTB Mulai - Nama Officer',
-            'TTB Selesai - Waktu',
-            'TTB Selesai - Nama Officer',
+            // Distribusi
+            'Distribusi TTB/SJ - Tanggal', 'Distribusi TTB/SJ - Waktu', 'Distribusi TTB/SJ - Nama Petugas',
 
-            // DISTRIBUSI
-            'Distribusi ke Supir - Waktu',
-            'Distribusi ke Supir - Nama Petugas',
+            // Mobil Keluar
+            'Mobil Keluar - Tanggal', 'Mobil Keluar - Waktu', 'Mobil Keluar - Nama Petugas',
 
-            // DATA BONGKAR
-            'No. Surat Jalan',
-            'Nama Barang',
-            'Jumlah Barang',
-
-            // LAIN2
-            'Keterangan',
-            'Status Terakhir',
-            'Tanggal Dibuat (Record)',
+            // Ringkasan
+            'Status Terakhir', 'Dibuat Pada',
         ];
     }
 
-    /**
-     * Helper format tanggal
-     */
-    protected function formatDateTime($value): ?string
+    protected function statusLabel(?string $s): string
     {
-        return $value ? $value->format('d/m/Y H:i') : null;
-    }
-
-    /**
-     * Helper label status
-     */
-    protected function statusLabel(?string $stage): string
-    {
-        return match ($stage) {
-            'security_in'      => 'Security Masuk',
-            'loading_started'  => 'Proses Bongkar/Muat',
-            'loading_ended'    => 'Selesai Bongkar/Muat',
-            'ttb_started'      => 'Proses TTB',
-            'ttb_ended'        => 'Selesai TTB',
-            'ttb_distributed'  => 'Distribusi ke Supir',
-            'completed'        => 'Selesai',
-            'canceled'         => 'Dibatalkan',
-            default            => 'Sedang Berlangsung',
+        return match ($s) {
+            'security_in'     => 'Mobil Masuk',
+            'loading_started' => 'Proses Bongkar/Muat',
+            'loading_ended'   => 'Selesai Bongkar/Muat',
+            'ttb_started'     => 'Proses TTB/SJ',
+            'ttb_ended'       => 'Selesai TTB/SJ',
+            'completed'       => 'Selesai',
+            'canceled'        => 'Dibatalkan',
+            default           => 'Berlangsung',
         };
     }
 }

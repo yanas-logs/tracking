@@ -58,6 +58,14 @@ class TrackingApp extends Component
     public $search = '';
     public $perPage = 10;
 
+    // di atas, barisan properti lain:
+    public $dateFrom = null;   // YYYY-MM-DD
+    public $dateTo   = null;   // YYYY-MM-DD
+
+    // opsional: saat user mengganti filter tanggal, reset halaman tabel
+    public function updatingDateFrom() { $this->resetPage(); }
+    public function updatingDateTo()   { $this->resetPage(); }
+
     public function mount()
     {
         $this->allUsers = User::orderBy('name')->get();
@@ -150,7 +158,7 @@ class TrackingApp extends Component
         } else {
             // Reset form untuk input baru
             $this->resetForm();
-            $this->type = 'bongkar'; 
+            $this->type = ''; 
         }
     }
 
@@ -266,14 +274,14 @@ class TrackingApp extends Component
         // 4. LOGIKA SECURITY (INPUT BARU MANUAL)
         if ($this->modalAction === 'create' && $user->role === 'security') {
             $this->validate([
-                'vehicle_name' => 'required',
+                //'vehicle_name' => 'required',
                 'company_name' => 'required',
                 'plate_number' => 'required',
                 'type'         => 'required',
             ]);
 
             Tracking::create([
-                'vehicle_name'        => $this->vehicle_name,
+                'vehicle_name'        => $this->company_name,
                 'company_name'        => $this->company_name,
                 'plate_number'        => $this->plate_number,
                 'vehicle_kind'        => $this->vehicle_kind,
@@ -401,12 +409,15 @@ class TrackingApp extends Component
 
     public function exportExcel()
     {
-        if (Auth::user()->role != 'admin') return;
-        return Excel::download(
-            new TrackingsExport($this->search),
-            'Laporan_Bongkar_Muat_'.now()->format('Ymd').'.xlsx'
-        );
+        $export = new \App\Exports\TrackingsExport($this->search);
+
+        // sesuaikan dengan versi lama (pakai properti start_date & end_date)
+        $export->start_date = $this->start_date ?? null;
+        $export->end_date   = $this->end_date ?? null;
+
+        return $export->download('Laporan_Tracking_'.now()->format('Ymd_His').'.xlsx');
     }
+
 
     public $start_date, $end_date;
 

@@ -8,7 +8,7 @@
         $statusText  = '✓ Selesai';
         $borderColor = '#10b981'; // Hijau
         $bgColor     = '#ecfdf5';
-        $activeStage = 'Security Keluar (Selesai)';
+        $activeStage = 'Mobil Keluar (Selesai)';
         $officerName = $record->security_out_officer ?: '-';
         $startTime   = $record->security_end;
 
@@ -68,7 +68,7 @@
 
             // 6) Distribusi ke supir sudah dilakukan, nunggu security keluar
             case 'ttb_distributed':
-                $statusText  = '⟳ Menunggu Security Keluar';
+                $statusText  = '⟳ Menunggu Mobil Keluar';
                 $activeStage = 'Distribusi ke Supir Selesai';
                 $officerName = $record->distribution_officer ?: '-';
                 $startTime   = $record->distribution_at;

@@ -45,7 +45,13 @@
                         </button>
                     @endif
                     
-                    <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+
+
+
+                    {{-- TAMPILAN ADMIN (TABEL) --}}
+                    @if ($user->role === 'admin')
+
+                        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
                     <div>
                         <label style="font-size: 12px; color: #6b7280;">Tanggal Mulai</label>
                         <input type="date" wire:model.live="start_date"
@@ -67,10 +73,7 @@
                         </div>
                     @endif
                 </div>
-                    
 
-                    {{-- TAMPILAN ADMIN (TABEL) --}}
-                    @if ($user->role === 'admin')
                         <div style="margin-bottom: 16px;">
                             <button wire:click="exportExcel" class="btn"
                                 style="width: 100%; background: #10b981; color: white; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"
@@ -121,7 +124,7 @@
                                             <th style="padding: 12px 16px; text-align: left; font-size: 14px; font-weight: 600; color: #374151;">
                                                 Bongkar / Muat</th>
                                             <th style="padding: 12px 16px; text-align: left; font-size: 14px; font-weight: 600; color: #374151;">
-                                                Officer TTB & Distribusi</th>
+                                                Officer TTB/SJ & Distribusi</th>
                                             <th style="padding: 12px 16px; text-align: left; font-size: 14px; font-weight: 600; color: #374151;">
                                                 Status</th>
                                             <th style="padding: 12px 16px; text-align: left; font-size: 14px; font-weight: 600; color: #374151;">
@@ -143,7 +146,7 @@
                                                 } elseif ($record->current_stage === 'ttb_distributed') {
                                                     $statusLabel = 'Menunggu Keluar (Security)';
                                                 } elseif (in_array($record->current_stage, ['ttb_started', 'ttb_ended'])) {
-                                                    $statusLabel = 'Proses TTB';
+                                                    $statusLabel = 'Proses TTB/SJ';
                                                 } elseif (in_array($record->current_stage, ['loading_started', 'loading_ended'])) {
                                                     $statusLabel = 'Proses Bongkar/Muat';
                                                 } elseif ($record->current_stage === 'security_in') {
@@ -225,14 +228,14 @@
                                                 {{-- Officer TTB & Distribusi --}}
                                                 <td style="padding: 12px 16px; font-size: 12px; color: #1f2937; line-height: 1.5;">
                                                     <div>
-                                                        <span style="font-weight: 600;">Mulai TTB:</span>
+                                                        <span style="font-weight: 600;">Mulai TTB/SJ:</span>
                                                         {{ $record->ttb_start ? $record->ttb_start->format('d/m/Y H:i') : '-' }}
                                                     </div>
                                                     <div style="color:#6b7280;">
                                                         📝 {{ $record->ttb_start_officer ?? '-' }}
                                                     </div>
                                                     <div style="margin-top:4px;">
-                                                        <span style="font-weight: 600;">Selesai TTB:</span>
+                                                        <span style="font-weight: 600;">Selesai TTB/SJ:</span>
                                                         {{ $record->ttb_end ? $record->ttb_end->format('d/m/Y H:i') : '-' }}
                                                     </div>
                                                     <div style="color:#6b7280;">
@@ -353,12 +356,26 @@
                             @endif
                             <div style="margin-bottom: 20px;">
                                 <label style="font-size: 14px; font-weight: 600; display: block; margin-bottom: 8px; color: #1f2937;">Pilih User:</label>
-                                <select wire:model="login_user_id" required style="width: 100%; padding: 14px; border: 2px solid #f3f4f6; border-radius: 8px; font-size: 16px; color: #1f2937; background: white;">
+                                @php
+                                    $roleDisplay = [
+                                        'admin' => 'Administrator',
+                                        'ttb' => 'Officer TTB/SJ',
+                                        'loading' => 'Bongkar/Muat',
+                                        'security' => 'Security',
+                                    ];
+                                @endphp
+
+                                <select wire:model="login_user_id" required
+                                        style="width: 100%; padding: 14px; border: 2px solid #f3f4f6; border-radius: 8px; font-size: 16px; color: #1f2937; background: white;">
                                     <option value="">-- Pilih Nama Anda --</option>
                                     @foreach ($allUsers as $user)
-                                        <option value="{{ $user->id }}">{{ $user->name }} ({{ ucfirst($user->role) }})</option>
+                                        <option value="{{ $user->id }}">
+                                            {{ $roleDisplay[$user->role] ?? $user->name }}
+                                        </option>
                                     @endforeach
                                 </select>
+
+
                             </div>
                             <div style="margin-bottom: 16px;">
                                 <label style="font-size: 14px; font-weight: 600; display: block; margin-bottom: 8px; color: #1f2937;">PIN/Password (4 digit):</label>
@@ -409,7 +426,7 @@
                                 <label style="font-size: 14px; font-weight: 600; display: block; margin-bottom: 6px;">
                                     Jenis Kegiatan <span style="color: red">*</span>
                                 </label>
-                                <select wire:model="type"
+                                <select wire:model.live="type"
                                         style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px; background: white;">
                                     <option value="">-- Pilih Jenis Kegiatan --</option>
                                     <option value="bongkar">BONGKAR</option>
@@ -434,7 +451,7 @@
                             @if (in_array($modalAction, ['create', 'public_create']) || (Auth::check() && Auth::user()->role === 'admin'))
                                 <div style="background: #f9fafb; padding: 16px; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 16px;">
                                     <h3 style="font-weight: bold; color: #374151; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;">
-                                        Data Kendaraan & Supir ({{ strtoupper($type) }})
+                                        Data Kendaraan & Supir
                                     </h3>
                                     <div style="display: flex; flex-direction: column; gap: 12px;">
 
@@ -565,8 +582,8 @@
                                     <strong>Status Saat Ini:</strong> 
                                     @if($editingRecord->current_stage == 'security_in') Menunggu Mulai Bongkar/Muat
                                     @elseif($editingRecord->current_stage == 'loading_started') Sedang Proses Bongkar/Muat
-                                    @elseif($editingRecord->current_stage == 'loading_ended') Menunggu Mulai TTB
-                                    @elseif($editingRecord->current_stage == 'ttb_started') Sedang Proses TTB
+                                    @elseif($editingRecord->current_stage == 'loading_ended') Menunggu Mulai TTB/SJ
+                                    @elseif($editingRecord->current_stage == 'ttb_started') Sedang Proses TTB/SJ
                                     @elseif($editingRecord->current_stage == 'ttb_ended') Menunggu Keluar (Security)
                                     @endif
                                 </div>

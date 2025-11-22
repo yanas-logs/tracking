@@ -419,8 +419,14 @@ class TrackingApp extends Component
     }
 
 
-    public $start_date, $end_date;
-
+    public $start_date = null, $end_date = null;
+    
+    public function resetDates()
+    {
+        $this->start_date = null;
+        $this->end_date   = null;
+        $this->resetPage(); // optional: supaya paging balik ke halaman 1
+    }
     // --- RENDER ---
 
     public function render()

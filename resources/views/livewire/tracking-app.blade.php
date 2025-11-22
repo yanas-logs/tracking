@@ -65,12 +65,12 @@
                     </div>
 
                     @if ($start_date || $end_date)
-                        <div style="display: flex; align-items: flex-end;">
-                            <button wire:click="$set('start_date', null); $set('end_date', null);"
-                                style="padding: 8px 12px; background: #ef4444; color: white; border-radius: 6px;">
-                                Reset
-                            </button>
-                        </div>
+                      <div style="display:flex;align-items:flex-end;">
+                        <button wire:click="resetDates"
+                          style="padding:8px 12px;background:#ef4444;color:white;border-radius:6px;">
+                          Reset
+                        </button>
+                      </div>
                     @endif
                 </div>
 

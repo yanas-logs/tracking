@@ -87,18 +87,42 @@
                                 Nama Instansi / Vendor <span class="text-red-500">*</span>
                             </label>
                             <div class="relative">
-                                <input
-                                    type="text"
+                                <select
                                     wire:model="company_name"
                                     class="w-full border-2 border-gray-200 rounded-xl p-3.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                                    placeholder="PT. INDAH KIAT / MCL / dll"
                                 >
+                                    <option value="">Pilih instansi / vendor...</option>
+                                    @foreach($companies as $company)
+                                        <option value="{{ $company }}">{{ $company }}</option>
+                                    @endforeach
+                                    <option value="__lainnya">Lainnya</option>
+                                </select>
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3">
                                     <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                                     </svg>
                                 </div>
                             </div>
+
+                            @if($company_name === '__lainnya')
+                                <div class="mt-3 flex gap-2">
+                                    <input
+                                        type="text"
+                                        wire:model.defer="custom_company"
+                                        wire:keydown.enter.prevent="addCustomCompany"
+                                        class="flex-1 border-2 border-gray-200 rounded-xl p-3.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                                        placeholder="Masukkan nama instansi / vendor..."
+                                    >
+                                    <button
+                                        type="button"
+                                        wire:click.prevent="addCustomCompany"
+                                        class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold shadow-sm hover:bg-blue-700"
+                                    >
+                                        Tambahkan
+                                    </button>
+                                </div>
+                            @endif
+
                             @error('company_name') 
                                 <p class="text-xs text-red-600 mt-1 flex items-center">
                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

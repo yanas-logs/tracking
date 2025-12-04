@@ -12,6 +12,8 @@ class PublicTruckInput extends Component
 
     // Data perusahaan & kendaraan
     public $company_name;     // Nama Instansi / Vendor
+    public $companies = ['PT. INDAH KIAT', 'MCL', 'ALFAGON'];
+    public $custom_company = '';
     public $plate_number;     // Nomor Polisi
     public $vehicle_kind;     // Jenis Kendaraan
     public $destination;      // Tujuan
@@ -101,6 +103,20 @@ class PublicTruckInput extends Component
 
         // Kembali ke halaman utama (login / dashboard)
         return redirect('/');
+    }
+
+    public function addCustomCompany()
+    {
+        $this->validate([
+            'custom_company' => 'required|string|max:255',
+        ]);
+
+        if (!in_array($this->custom_company, $this->companies)) {
+            $this->companies[] = $this->custom_company;
+        }
+
+        $this->company_name = $this->custom_company;
+        $this->custom_company = '';
     }
 
     public function render()

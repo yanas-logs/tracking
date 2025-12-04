@@ -456,14 +456,33 @@
                                     <div style="display: flex; flex-direction: column; gap: 12px;">
 
                                         {{-- Nama Instansi / Vendor --}}
-                                        <div>
-                                            <label style="font-size: 14px; font-weight: 600; display: block; margin-bottom: 6px;">
-                                                Nama Instansi / Vendor <span style="color: red">*</span>
-                                            </label>
-                                            <input wire:model="company_name" type="text" required
-                                                   placeholder="PT. INDAH KIAT / MCL / dll"
-                                                   style="width: 100%; padding: 10px; border: 2px solid #f3f4f6; border-radius: 8px; font-size: 16px;">
-                                        </div>
+                                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Nama Instansi / Vendor <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <input
+                                    type="text"
+                                    list="companyNames"
+                                    wire:model="company_name"
+                                    class="w-full border-2 border-gray-200 rounded-xl p-3.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                                    placeholder="Ketik atau pilih instansi / vendor..."
+                                >
+                                <datalist id="companyNames">
+                                    <option value="PT. INDAH KIAT"></option>
+                                    <option value="MCL"></option>
+                                    <option value="PT. XYZ"></option>
+                                </datalist>
+                            </div>
+                            @error('company_name') 
+                                <p class="text-xs text-red-600 mt-1 flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    {{ $message }}
+                                </p> 
+                            @enderror
+                        </div>
 
                                         {{-- Nomor Polisi --}}
                                         <div>
@@ -477,23 +496,49 @@
 
                                         {{-- Jenis Kendaraan --}}
                                         <div>
-                                            <label style="font-size: 14px; font-weight: 600; display: block; margin-bottom: 6px;">
-                                                Jenis Kendaraan
-                                            </label>
-                                            <input wire:model="vehicle_kind" type="text"
-                                                   placeholder="KONTAINER 20 FT / TRONTON / DLL"
-                                                   style="width: 100%; padding: 10px; border: 2px solid #f3f4f6; border-radius: 8px; font-size: 16px;">
-                                        </div>
-
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Jenis Kendaraan
+                            </label>
+                            <div>
+                                <input
+                                    type="text"
+                                    list="vehicleKinds"
+                                    wire:model="vehicle_kind"
+                                    class="w-full border-2 border-gray-200 rounded-xl p-3.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                                    placeholder="Ketik atau pilih jenis kendaraan..."
+                                >
+                                <datalist id="vehicleKinds">
+                                    <option value="L300"></option>
+                                    <option value="COLT DIESEL"></option>
+                                    <option value="FUSO WING BOX"></option>
+                                    <option value="FUSO BESAR"></option>
+                                    <option value="KONTAINER 20 FT"></option>
+                                    <option value="KONTAINER 40 FT"></option>
+                                    <option value="FUSO TRUK GANDENG"></option>
+                                    <option value="MINI BUS"></option>
+                                    <option value="FUSO ISOTANK"></option>
+                                </datalist>
+                            </div>
+                        </div>
                                         {{-- Tujuan --}}
                                         <div>
-                                            <label style="font-size: 14px; font-weight: 600; display: block; margin-bottom: 6px;">
-                                                Tujuan
-                                            </label>
-                                            <input wire:model="destination" type="text"
-                                                   placeholder="SAMARINDA / CBA / dll."
-                                                   style="width: 100%; padding: 10px; border: 2px solid #f3f4f6; border-radius: 8px; font-size: 16px;">
-                                        </div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Tujuan</label>
+                            <div>
+                                <input
+                                    type="text"
+                                    list="destinations"
+                                    wire:model="destination"
+                                    class="w-full border-2 border-gray-200 rounded-xl p-3.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                                    placeholder="Ketik atau pilih tujuan..."
+                                >
+                                <datalist id="destinations">
+                                    <option value="SAMARINDA"></option>
+                                    <option value="CBA"></option>
+                                    <option value="BALIKPAPAN"></option>
+                                    <option value="SURABAYA"></option>
+                                </datalist>
+                            </div>
+                        </div>
 
                                         {{-- Nama Sopir --}}
                                         <div>
@@ -507,23 +552,36 @@
 
                                         {{-- Nomor HP Sopir --}}
                                         <div>
-                                            <label style="font-size: 14px; font-weight: 600; display: block; margin-bottom: 6px;">
-                                                Nomor HP Sopir
-                                            </label>
-                                            <input wire:model="driver_phone" type="text"
-                                                   placeholder="0812xxxxxxx"
-                                                   style="width: 100%; padding: 10px; border: 2px solid #f3f4f6; border-radius: 8px; font-size: 16px;">
-                                        </div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Nomor HP Sopir</label>
+                            <div class="flex">
+                                <span class="inline-flex items-center px-3 rounded-l-xl border-2 border-r-0 border-gray-200 bg-gray-50 text-sm text-gray-700">+62</span>
+                                <input
+                                    type="text"
+                                    wire:model="driver_phone_local"
+                                    class="w-full border-2 border-gray-200 rounded-r-xl p-3.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                                    placeholder="812xxxx"
+                                >
+                            </div>
+                        </div>
 
                                         {{-- Identitas Sopir --}}
                                         <div>
-                                            <label style="font-size: 14px; font-weight: 600; display: block; margin-bottom: 6px;">
-                                                Identitas
-                                            </label>
-                                            <input wire:model="driver_identity" type="text"
-                                                   placeholder="KTP / SIM / dll"
-                                                   style="width: 100%; padding: 10px; border: 2px solid #f3f4f6; border-radius: 8px; font-size: 16px;">
-                                        </div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Identitas</label>
+                            <div>
+                                <input
+                                    type="text"
+                                    list="identityTypes"
+                                    wire:model="driver_identity"
+                                    class="w-full border-2 border-gray-200 rounded-xl p-3.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                                    placeholder="Ketik atau pilih identitas..."
+                                >
+                                <datalist id="identityTypes">
+                                    <option value="KTP"></option>
+                                    <option value="SIM"></option>
+                                    <option value="Passport"></option>
+                                </datalist>
+                            </div>
+                        </div>
 
                                         {{-- FIELD TAMBAHAN KHUSUS BONGKAR --}}
                                         @if ($type === 'bongkar')

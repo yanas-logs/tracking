@@ -12,8 +12,6 @@ class PublicTruckInput extends Component
 
     // Data perusahaan & kendaraan
     public $company_name;     // Nama Instansi / Vendor
-    public $companies = ['PT. INDAH KIAT', 'MCL', 'ALFAGON'];
-    public $custom_company = '';
     public $plate_number;     // Nomor Polisi
     public $vehicle_kind;     // Jenis Kendaraan
     public $destination;      // Tujuan
@@ -21,6 +19,7 @@ class PublicTruckInput extends Component
     // Data sopir
     public $driver_name;      // Nama Sopir
     public $driver_phone;     // No HP Sopir
+    public $driver_phone_local; // nomor tanpa prefix (input untuk UX, dipetakan ke driver_phone)
     public $driver_identity;  // Identitas (KTP / SIM / dll)
 
     // Field khusus BONGKAR
@@ -91,6 +90,7 @@ class PublicTruckInput extends Component
             'plate_number',
             'vehicle_kind',
             'destination',
+            'driver_phone_local',
             'driver_name',
             'driver_phone',
             'driver_identity',
@@ -105,23 +105,24 @@ class PublicTruckInput extends Component
         return redirect('/');
     }
 
-    public function addCustomCompany()
-    {
-        $this->validate([
-            'custom_company' => 'required|string|max:255',
-        ]);
-
-        if (!in_array($this->custom_company, $this->companies)) {
-            $this->companies[] = $this->custom_company;
-        }
-
-        $this->company_name = $this->custom_company;
-        $this->custom_company = '';
-    }
-
     public function render()
     {
         return view('livewire.public-truck-input')
             ->layout('layouts.app');
+    }
+
+    /**
+     * When the user types the local phone part, compose the full driver_phone with country prefix 62.
+     * This handler strips non-digit characters and leading zeros from the local input.
+     */
+    public function updatedDriverPhoneLocal($value)
+    {
+        $digits = preg_replace('/\D+/', '', $value);
+        $digits = ltrim($digits, '0');
+        if ($digits === '') {
+            $this->driver_phone = null;
+        } else {
+            $this->driver_phone = '62' . $digits;
+        }
     }
 }

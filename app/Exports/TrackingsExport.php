@@ -73,6 +73,11 @@ class TrackingsExport implements FromCollection, WithHeadings
                 $r->driver_identity,
                 $r->description,
 
+                // Surat Jalan / Barang
+                $r->sj_number,
+                $r->item_name,
+                $r->item_quantity,
+
                 // Mobil Masuk (Security)
                 $secIn['date'], $secIn['time'], $r->security_in_officer,
 
@@ -90,9 +95,9 @@ class TrackingsExport implements FromCollection, WithHeadings
                 // Mobil Keluar (Security)
                 $secOut['date'], $secOut['time'], $r->security_out_officer,
 
-                // Ringkasan
-                $this->statusLabel($r->current_stage),
-                $r->created_at?->format('Y-m-d H:i'),
+                    // Ringkasan
+                    $this->statusLabel($r->current_stage),
+                    $r->created_at?->format('Y-m-d H:i'),
             ];
         });
     }
@@ -103,6 +108,9 @@ class TrackingsExport implements FromCollection, WithHeadings
             // Identitas
             'Nama Kendaraan', 'Nama Instansi', 'Plat Nomor', 'Jenis Kendaraan', 'Tujuan',
             'Jenis (B/M)', 'Nama Supir', 'No HP Supir', 'Identitas Supir', 'Keterangan',
+
+            // Surat Jalan / Barang
+            'No. Surat Jalan', 'Nama Barang', 'Jumlah Barang',
 
             // Mobil Masuk (Security)
             'Mobil Masuk - Tanggal', 'Mobil Masuk - Waktu', 'Mobil Masuk - Nama Petugas',

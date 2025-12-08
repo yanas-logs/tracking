@@ -59,7 +59,7 @@ class PublicTruckInput extends Component
         // SIMPAN KE DATABASE
         Tracking::create([
             // NOTE: vehicle_name tetap diisi, disamakan dengan company_name
-            'vehicle_name'      => $this->company_name,
+            'vehicle_name'      => $this->vehicle_kind,
             'company_name'      => $this->company_name,
             'plate_number'      => $this->plate_number,
             'vehicle_kind'      => $this->vehicle_kind,

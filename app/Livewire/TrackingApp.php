@@ -345,11 +345,24 @@ class TrackingApp extends Component
                     ]);
                 } elseif ($record->current_stage == 'ttb_ended') {
                     // 3) Distribusi ke Supir
-                    $record->update([
+                    $distData = [
                         'distribution_officer' => $this->officer_name,
                         'distribution_at'    => $now,
                         'current_stage'        => 'ttb_distributed',
-                    ]);
+                    ];
+
+                    // If the TTB officer provided SJ/item/quantity (for MUAT), save to same columns
+                    if (!empty($this->sj_number)) {
+                        $distData['sj_number'] = $this->sj_number;
+                    }
+                    if (!empty($this->item_name)) {
+                        $distData['item_name'] = $this->item_name;
+                    }
+                    if (!empty($this->item_quantity)) {
+                        $distData['item_quantity'] = $this->item_quantity;
+                    }
+
+                    $record->update($distData);
                 } else {
                     session()->flash('error', 'Urutan salah! Tunggu proses Bongkar/Muat selesai.');
                     return;
@@ -371,11 +384,25 @@ class TrackingApp extends Component
                 }
                 // Proses keluar setelah distribusi selesai
                 elseif ($record->current_stage == 'ttb_distributed') {
-                    $record->update([
-                        'security_end'        => $now,
-                        'security_out_officer'=> $this->officer_name,
-                        'current_stage'       => 'completed',
-                    ]);
+                        // If there are additional fields (SJ / item / qty) filled by the officer,
+                        // persist them as part of the finalization. Only include if provided.
+                        $updateData = [
+                            'security_end'        => $now,
+                            'security_out_officer'=> $this->officer_name,
+                            'current_stage'       => 'completed',
+                        ];
+
+                        if (!empty($this->sj_number)) {
+                            $updateData['sj_number'] = $this->sj_number;
+                        }
+                        if (!empty($this->item_name)) {
+                            $updateData['item_name'] = $this->item_name;
+                        }
+                        if (!empty($this->item_quantity)) {
+                            $updateData['item_quantity'] = $this->item_quantity;
+                        }
+
+                        $record->update($updateData);
                 } else {
                     session()->flash('error', 'Proses belum selesai sepenuhnya (Tunggu distribusi ke supir selesai).');
                     return;

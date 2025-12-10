@@ -62,7 +62,7 @@ class TrackingsExport implements FromCollection, WithHeadings
 
             return [
                 // Identitas
-                $r->vehicle_name,
+                // $r->vehicle_name,
                 $r->company_name,
                 $r->plate_number,
                 $r->vehicle_kind,
@@ -106,7 +106,7 @@ class TrackingsExport implements FromCollection, WithHeadings
     {
         return [
             // Identitas
-            'Nama Kendaraan', 'Nama Instansi', 'Plat Nomor', 'Jenis Kendaraan', 'Tujuan',
+            'Nama Instansi', 'Plat Nomor', 'Jenis Kendaraan', 'Tujuan',
             'Jenis (B/M)', 'Nama Supir', 'No HP Supir', 'Identitas Supir', 'Keterangan',
 
             // Surat Jalan / Barang
@@ -116,12 +116,12 @@ class TrackingsExport implements FromCollection, WithHeadings
             'Mobil Masuk - Tanggal', 'Mobil Masuk - Waktu', 'Mobil Masuk - Nama Petugas',
 
             // Bongkar / Muat
-            'Bongkar/Muat Mulai - Tanggal', 'Bongkar/Muat Mulai - Waktu', 'Bongkar/Muat Mulai - Nama Petugas',
+            'Bongkar/Muat Mulai - Tanggal', 'Bongkar/Muat Mulai - Waktu', 'Bongkar/Muat Mulai - Nama', 
             'Bongkar/Muat Selesai - Tanggal', 'Bongkar/Muat Selesai - Waktu', 'Bongkar/Muat Selesai - Nama Petugas',
 
             // TTB/SJ
             'TTB/SJ Mulai - Tanggal', 'TTB/SJ Mulai - Waktu', 'TTB/SJ Mulai - Nama Officer',
-            'TTB/SJ - Tanggal', 'TTB/SJ - Waktu', 'TTB/SJ - Nama Officer',
+            'TTB/SJ Selesai - Tanggal', 'TTB/SJ Selesai - Waktu', 'TTB/SJ Selesai - Nama Officer',
 
             // Distribusi
             'Distribusi TTB/SJ - Tanggal', 'Distribusi TTB/SJ - Waktu', 'Distribusi TTB/SJ - Nama Petugas',

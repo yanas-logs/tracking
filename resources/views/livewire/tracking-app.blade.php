@@ -162,7 +162,7 @@
                                                                     </div>
                                                                 @endif
                                                                 <div style="font-size: 12px; color: #6b7280;">
-                                                                    {{ $record->plate_number }}
+                                                                    {{ $record->plate_number     }}
                                                                     @if($record->destination)
                                                                         • {{ $record->destination }}
                                                                     @endif

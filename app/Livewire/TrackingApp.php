@@ -36,6 +36,7 @@ class TrackingApp extends Component
     public $company_name;        // Nama Instansi
     public $destination;         // Tujuan
     public $driver_phone;        // Nomor HP Sopir
+    public $driver_phone_local = ''; 
     public $driver_identity;     // Identitas (KTP/SIM)
     public $sj_number;           // No. Surat Jalan (khusus bongkar)
     public $item_name;           // Nama Barang (khusus bongkar)

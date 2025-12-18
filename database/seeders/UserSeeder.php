@@ -31,7 +31,7 @@ class UserSeeder extends Seeder
         ]);
 
         User::create([
-            'name' => 'Administrator', // Ganti dengan nama asli
+            'name' => 'Admin', // Ganti dengan nama asli
             'email' => 'admin@example.com',
             'role' => 'admin',
             'password' => Hash::make('9999'), // PIN Admin

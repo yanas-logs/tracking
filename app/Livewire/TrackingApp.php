@@ -27,7 +27,7 @@ class TrackingApp extends Component
     public $editingRecord;
 
     // Data Kendaraan (Input Security / Admin / Supir)
-    public $vehicle_name, $plate_number, $description, $keterangan;
+    public $vehicle_name, $plate_number, $description, $keterangan, $ttb_notes;
     public $driver_name; // Input Nama Supir
     public $type = ''; 
 
@@ -148,6 +148,7 @@ class TrackingApp extends Component
                 $this->destination         = $this->editingRecord->destination;
                 $this->description         = $this->editingRecord->description;
                 $this->keterangan          = $this->editingRecord->keterangan;
+                $this->ttb_notes           = $this->editingRecord->ttb_notes;
                 $this->type                = $this->editingRecord->type;
                 $this->driver_name         = $this->editingRecord->driver_name;
                 $this->driver_phone        = $this->editingRecord->driver_phone;
@@ -180,6 +181,7 @@ class TrackingApp extends Component
             'destination',
             'description',
             'keterangan',
+            'ttb_notes',
             'type',
             'officer_name',
             'driver_name',
@@ -353,6 +355,7 @@ class TrackingApp extends Component
                         'ttb_end'          => $now,
                         'ttb_end_officer'  => $this->officer_name,
                         'current_stage'    => 'ttb_ended',
+                        'ttb_notes'        => $this->ttb_notes,
                     ]);
                 } elseif ($record->current_stage == 'ttb_ended') {
                     // 3) Distribusi ke Supir

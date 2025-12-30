@@ -87,7 +87,7 @@ class TrackingsExport implements FromCollection, WithHeadings
 
                 // TTB / SJ
                 $ttbS['date'], $ttbS['time'], $r->ttb_start_officer,
-                $ttbE['date'], $ttbE['time'], $r->ttb_end_officer,
+                $ttbE['date'], $ttbE['time'], $r->ttb_end_officer, $r->ttb_notes,
 
                 // Distribusi
                 $dist['date'], $dist['time'], $r->distribution_officer,
@@ -121,7 +121,7 @@ class TrackingsExport implements FromCollection, WithHeadings
 
             // TTB/SJ
             'TTB/SJ Mulai - Tanggal', 'TTB/SJ Mulai - Waktu', 'TTB/SJ Mulai - Nama Officer',
-            'TTB/SJ Selesai - Tanggal', 'TTB/SJ Selesai - Waktu', 'TTB/SJ Selesai - Nama Officer',
+            'TTB/SJ Selesai - Tanggal', 'TTB/SJ Selesai - Waktu', 'TTB/SJ Selesai - Nama Officer', 'Keterangan Tambahan TTB/SJ',
 
             // Distribusi
             'Distribusi TTB/SJ - Tanggal', 'Distribusi TTB/SJ - Waktu', 'Distribusi TTB/SJ - Nama Petugas',

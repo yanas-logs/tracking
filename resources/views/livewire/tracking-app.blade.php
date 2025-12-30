@@ -1036,7 +1036,18 @@
                                                             "SUSI IRAWAN",
                                                             "SOLEH",
                                                             "TRIA",
-                                                            "ULFAH NURJANAH"
+                                                            "ULFAH NURJANAH",
+                                                            "RUBAI",
+                                                            "MUTINI",
+                                                            "RASITA",
+                                                            "AGUNG",
+                                                            "ERIK",
+                                                            "RIFAL",
+                                                            "JUJUN",
+                                                            "ADANG",
+                                                            "SURYADI",
+                                                            "RASNAM",
+                                                            "ERLAN"
                                                             ],
                                                     'ttb' => [
                                                             "AMAR",
@@ -1084,10 +1095,10 @@
                                         @error('officer_name') <span style="color: #ef4444; font-size: 12px;">{{ $message }}</span> @enderror
                                     </div>
                                 </div>
-                                @if(isset($editingRecord) && $editingRecord->current_stage === 'loading_started')
+                                @if(isset($editingRecord) && $editingRecord->current_stage === 'loading_started' || $editingRecord->current_stage === 'ttb_started')
                                 <div style="margin-top: 12px;">
                                     <label style="font-size: 14px; font-weight: 600; display: block; margin-bottom: 6px; color: #4b5563;">Keterangan Tambahan</label>
-                                    <textarea wire:model="keterangan" rows="2"
+                                    <textarea @if($editingRecord->current_stage === 'loading_started') wire:model="keterangan" @elseif($editingRecord->current_stage === 'ttb_started') wire:model="ttb_notes" @endif rows="2"
                                               placeholder="Tambahkan keterangan tambahan jika diperlukan..."
                                               style="width: 100%; padding: 10px; border: 2px solid #dbeafe; border-radius: 8px; font-size: 16px; resize: vertical;"></textarea>
                                 </div>

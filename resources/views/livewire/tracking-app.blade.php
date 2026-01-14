@@ -274,10 +274,10 @@
                                     <td style="padding: 12px 16px; font-size: 14px;">
                                         <div style="display: flex; gap: 8px;">
                                             <button wire:click="openUpdateModal({{ $record->id }})"
-                                                class="text-blue-600 hover:text-blue-800 font-bold">Edit</button>
-                                            <button type="button" wire:click="deleteTracking({{ $record->id }})"
-                                                onclick="confirm('⚠️ Hapus data permanen?') || event.stopImmediatePropagation()"
-                                                class="text-red-600 hover:text-red-800 font-bold">Hapus</button>
+                                                class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400">Edit</button>
+                                            <button type="button"
+                                                onclick="Swal.fire({title: 'Konfirmasi Hapus', text: 'Apakah Anda yakin ingin menghapus data ini secara permanen?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#6b7280', confirmButtonText: 'Ya, Hapus', cancelButtonText: 'Batal'}).then((result) => { if (result.isConfirmed) { @this.call('deleteTracking', {{ $record->id }}) } })"
+                                                class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400">Hapus</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -947,12 +947,12 @@
                         @elseif($editingRecord->current_stage == 'loading_started') Sedang Proses Bongkar/Muat
                         @elseif($editingRecord->current_stage == 'loading_ended') Menunggu Mulai TTB/SJ
                         @elseif($editingRecord->current_stage == 'ttb_started') Sedang Proses TTB/SJ
-                        @elseif($editingRecord->current_stage == 'ttb_ended') Menunggu Keluar (Security)
+                        @elseif($editingRecord->current_stage == 'ttb_ended') Menunggu Distribusi / Keluar (Security)
                         @endif
                     </div>
                     @endif
 
-                    @if(isset($editingRecord) && $editingRecord->current_stage == 'ttb_distributed' && ($editingRecord->type ?? $type) === 'muat')
+                    @if(isset($editingRecord) && $editingRecord->current_stage == 'ttb_ended' && Auth::user()->role === ( ($editingRecord->type ?? $type) === 'muat' ? 'ttb' : 'loading' ) && ($editingRecord->type ?? $type) === 'muat')
                     <div style="margin-top: 8px; padding: 10px; border-radius: 8px; background: #eff6ff; border: 1px solid #bfdbfe;">
                         <p style="font-size: 12px; font-weight: 700; color: #1d4ed8; margin: 0 0 8px 0;">Field Tambahan PROSES MUAT</p>
                         <div style="display: flex; flex-direction: column; gap: 8px;">

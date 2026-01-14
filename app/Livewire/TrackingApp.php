@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Exports\TrackingsExport;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Maatwebsite\Excel\Facades\Excel;
 
 class TrackingApp extends Component
@@ -69,7 +70,9 @@ class TrackingApp extends Component
 
     public function mount()
     {
-        $this->allUsers = User::orderBy('name')->get();
+        $this->allUsers = Cache::remember('all_users', 3600, function () {
+            return User::orderBy('name')->get();
+        });
     }
 
     public function updatingSearch()
@@ -333,8 +336,28 @@ class TrackingApp extends Component
                         'current_stage'        => 'loading_ended',
                         'keterangan'           => $this->keterangan,
                     ]);
+                } elseif ($record->current_stage == 'ttb_ended' && $record->type === 'bongkar') {
+                    // Distribusi ke Supir
+                    $distData = [
+                        'distribution_officer' => $this->officer_name,
+                        'distribution_at'    => $now,
+                        'current_stage'        => 'ttb_distributed',
+                    ];
+
+                    // If the officer provided SJ/item/quantity (for MUAT), save to same columns
+                    if (!empty($this->sj_number)) {
+                        $distData['sj_number'] = $this->sj_number;
+                    }
+                    if (!empty($this->item_name)) {
+                        $distData['item_name'] = $this->item_name;
+                    }
+                    if (!empty($this->item_quantity)) {
+                        $distData['item_quantity'] = $this->item_quantity;
+                    }
+
+                    $record->update($distData);
                 } else {
-                    session()->flash('error', 'Urutan salah! Tunggu Security Masuk atau proses sudah selesai.');
+                    session()->flash('error', 'Urutan salah! Tunggu Security Masuk, proses Bongkar/Muat, atau TTB selesai.');
                     return;
                 }
             }
@@ -478,14 +501,18 @@ class TrackingApp extends Component
             
             if ($userRole == 'admin') {
                 // Admin lihat semua + Pagination + Search
-                $query = Tracking::query();
+                $query = Tracking::select([
+                    'id', 'vehicle_name', 'plate_number', 'driver_name', 'company_name',
+                    'type', 'current_stage', 'security_start', 'loading_start', 'ttb_start', 'security_end',
+                    'created_at', 'updated_at'
+                ]);
 
-                if ($this->start_date) {
-                    $query->whereDate('security_start', '>=', $this->start_date);
+                if ($this->dateFrom) {
+                    $query->whereDate('security_start', '>=', $this->dateFrom);
                 }
 
-                if ($this->end_date) {
-                    $query->whereDate('security_start', '<=', $this->end_date);
+                if ($this->dateTo) {
+                    $query->whereDate('security_start', '<=', $this->dateTo);
                 }
 
                 if (!empty($this->search)) {
@@ -500,7 +527,11 @@ class TrackingApp extends Component
 
             } else {
                 // User lain lihat list card aktif (with optional search)
-                $query = Tracking::where('current_stage', '!=', 'completed')
+                $query = Tracking::select([
+                    'id', 'vehicle_name', 'plate_number', 'driver_name', 'company_name',
+                    'type', 'current_stage', 'security_start', 'loading_start', 'ttb_start', 'security_end',
+                    'created_at', 'updated_at'
+                ])->where('current_stage', '!=', 'completed')
                                  ->where('current_stage', '!=', 'canceled');
 
                 if (!empty($this->search)) {

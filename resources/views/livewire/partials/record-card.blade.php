@@ -95,7 +95,7 @@
             $hasDistrib   = !is_null($record->distribution_at);
             $isTtbCurrent = in_array($record->current_stage, ['ttb_started', 'ttb_ended', 'ttb_distributed']);
         @endphp
-        <div class="relative pb-6 border-l-2 
+        <div class="relative pb-6 border-l-2 s
             {{ $hasDistrib ? 'border-emerald-400' : ($hasTtbEnd ? 'border-emerald-400' : ($hasTtbStart ? 'border-emerald-400' : 'border-gray-200')) }} pl-6">
             <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full border-2 
                 {{ $hasDistrib || $hasTtbEnd ? 'bg-emerald-500 border-emerald-100' : ($isTtbCurrent ? 'bg-yellow-400 border-yellow-100' : 'bg-gray-200 border-white') }}"></div>
@@ -196,6 +196,12 @@
                     $btnText    = 'Selesai Bongkar/Muat';
                     $btnColor   = 'bg-orange-600 hover:bg-orange-700';
                 }
+                // Distribusi ke Supir
+                elseif ($record->current_stage == 'ttb_ended' && $record->type === 'bongkar') {
+                    $showButton = true;
+                    $btnText    = 'Distribusi ke Supir';
+                    $btnColor   = 'bg-emerald-600 hover:bg-emerald-700';
+                }
 
             }
             // OFFICER TTB
@@ -213,10 +219,10 @@
                     $btnText    = 'Selesai TTB/SJ';
                     $btnColor   = 'bg-orange-600 hover:bg-orange-700';
                 }
-                // 3) Distribusi ke Supir
-                elseif ($record->current_stage == 'ttb_ended') {
+                 // Distribusi ke Supir
+                elseif ($record->current_stage == 'ttb_ended' && $record->type === 'muat') {
                     $showButton = true;
-                    $btnText    = 'Distribusi ke Supir TTB/SJ';
+                    $btnText    = 'Distribusi ke Supir';
                     $btnColor   = 'bg-emerald-600 hover:bg-emerald-700';
                 }
             }
